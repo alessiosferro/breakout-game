@@ -1,8 +1,12 @@
+import {PlayerBar} from "./PlayerBar.js";
+
 export class Game {
     #canvas;
+    #playerBar;
 
     constructor({ canvas }) {
         this.#canvas = canvas;
+        this.#playerBar = new PlayerBar({canvas});
     }
 
     #setup() {
@@ -19,8 +23,7 @@ export class Game {
     #render() {
         this.#canvas.clear();
 
-        this.#canvas.ctx.fillStyle = 'black';
-        this.#canvas.ctx.fillRect(20, 20, 300, 300);
+        this.#playerBar.render();
 
         requestAnimationFrame(() => this.#render());
     }

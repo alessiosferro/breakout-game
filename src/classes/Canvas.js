@@ -1,11 +1,13 @@
 export class Canvas {
-    #height;
     #width;
+    #height;
+    #blockSize;
     #element = document.createElement('canvas');
 
-    constructor(height = 720, width = 960, className = "canvas") {
-        this.#height = height;
-        this.#width = width;
+    constructor(blockSize = 24, numberOfBlocksOnXAxis = 40, numberOfBlocksOnYAxis = 30, className = "canvas") {
+        this.#width = blockSize * numberOfBlocksOnXAxis;
+        this.#height = blockSize * numberOfBlocksOnYAxis;
+        this.#blockSize = blockSize;
 
         this.#element.width = this.#width;
         this.#element.height = this.#height;
@@ -30,5 +32,9 @@ export class Canvas {
 
     get height() {
         return this.#height;
+    }
+
+    get blockSize() {
+        return this.#blockSize;
     }
 }
