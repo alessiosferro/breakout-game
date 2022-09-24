@@ -2,6 +2,7 @@ import {PlayerBar} from "./PlayerBar.js";
 
 export class Game {
     #canvas;
+    #bouncingBall;
     #playerBar;
 
     constructor({ canvas }) {

@@ -1,31 +1,34 @@
+import {Position} from "./Position.js";
+
 export class PlayerBar {
-    #width;
-    #height;
     #speed;
-    #x;
-    #y;
     #color;
-    #canvas;
-    #dx = 0;
+    #position;
 
     constructor({color = 'black', speed = 5, canvas}) {
-        this.#width = canvas.blockSize * 6;
-        this.#height = canvas.blockSize;
-        this.#color = color;
+        const width = canvas.blockSize * 6;
+
+        this.#position = new Position({
+            canvas,
+            width,
+            height: canvas.blockSize,
+            y: canvas.height - canvas.blockSize * 3,
+            x: (canvas.width / 2) - (width / 2),
+            dx: 0,
+            dy: 0
+        });
+
         this.#speed = speed;
-        this.#canvas = canvas;
-        this.#y = canvas.height - canvas.blockSize * 3;
-        this.#x = (canvas.width / 2) - (this.#width / 2);
+        this.#color = color;
+
         this.#handleBarMove();
     }
 
     render() {
-        this.#canvas.ctx.fillStyle = this.#color;
-        this.#canvas.ctx.fillRect(this.#x, this.#y, this.#width, this.#height);
+        this.#position.canvas.ctx.fillStyle = this.#color;
+        this.#position.canvas.ctx.fillRect(this.#position.x, this.#position.y, this.#position.width, this.#position.height);
 
-        if (this.#x + this.#dx < 0 || this.#x + this.#width + this.#dx >= this.#canvas.width) return;
-
-        this.#x += this.#dx;
+        this.#position.recalculateXPosition();
     }
 
     #handleBarMove() {
@@ -35,22 +38,22 @@ export class PlayerBar {
     }
 
     #moveRight(event) {
-        if (event.key !== 'ArrowRight' || this.#dx > 0) return;
+        if (event.key !== 'ArrowRight' || this.#position.dx > 0) return;
 
-        this.#dx = this.#speed;
+        this.#position.dx = this.#speed;
     }
 
     #moveLeft(event) {
-        if (event.key !== 'ArrowLeft' || this.#dx < 0) return;
+        if (event.key !== 'ArrowLeft' || this.#position.dx < 0) return;
 
-        this.#dx = -this.#speed;
+        this.#position.dx = -this.#speed;
     }
 
     #reset() {
-        this.#dx = 0;
+        this.#position.dx = 0;
     }
 
     set dx(dx) {
-        this.#dx = dx;
+        this.#position.dx = dx;
     }
 }
