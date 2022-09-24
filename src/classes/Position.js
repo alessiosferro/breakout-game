@@ -5,20 +5,26 @@ export class Position {
     #dx;
     #width;
     #height;
-    #canvas;
+    #canvasWidth;
+    #canvasHeight;
 
-    constructor({y, x, dy, dx, width, height, canvas}) {
+    constructor({y, x, dy, dx, width, height, canvasWidth, canvasHeight}) {
         this.#y = y;
         this.#x = x;
         this.#dy = dy;
         this.#dx = dx;
         this.#width = width;
         this.#height = height;
-        this.#canvas = canvas;
+        this.#canvasWidth = canvasWidth;
+        this.#canvasHeight = canvasHeight;
     }
 
-    get canvas() {
-        return this.#canvas;
+    get canvasWidth() {
+        return this.#canvasWidth;
+    }
+
+    get canvasHeight() {
+        return this.#canvasHeight;
     }
 
     get x() {
@@ -58,7 +64,7 @@ export class Position {
     }
 
     #isNextYPositionOutsideCanvasHeight() {
-        return this.#y + this.#height + this.#dy >= this.#canvas.height;
+        return this.#y + this.#height + this.#dy >= this.#canvasHeight;
     }
 
     #isNextXPositionOutsideCanvas() {
@@ -66,7 +72,7 @@ export class Position {
     }
 
     #isNextXPositionOutsideCanvasWidth() {
-        return this.#x + this.#width + this.#dx >= this.#canvas.width;
+        return this.#x + this.#width + this.#dx >= this.#canvasWidth;
     }
 
     #invertYSpeed() {
@@ -85,15 +91,42 @@ export class Position {
         this.#dy = 0;
     }
 
-    recalculateYPosition() {
+    recalculateXYPosition(playerBar) {
+        if (!playerBar) return;
+
+        const checkIfYPositionIsBetweenPlayerBar = () => {
+            return (this.#y + this.#height + this.#dy >= playerBar.position.y && this.#y + this.#height + this.#dy <= playerBar.position.y + playerBar.canvas.blockSize)
+                || (this.#y + this.#dy >= playerBar.position.y && this.#y + this.#dy <= playerBar.position.y + playerBar.position.height);
+        }
+
+        const checkIfXPositionIsBetweenPlayerBar = () => {
+            return (this.#x + this.#width + this.#dx >= playerBar.position.x && this.#x + this.#width + this.#dx <= playerBar.position.x + playerBar.position.width)
+                || (this.#x + this.#dx >= playerBar.position.x && this.#x + this.#dx <= playerBar.position.x + playerBar.position.width);
+        }
+
+        if (checkIfXPositionIsBetweenPlayerBar() && checkIfYPositionIsBetweenPlayerBar()) {
+            this.#invertYSpeed();
+        }
+
+        if (this.#x + this.#dx >= playerBar.position.x && this.#x + this.#dx <= playerBar.position.x + playerBar.canvas.blockSize &&
+            this.#y > playerBar.position.y && this.#y <= playerBar.position.y + playerBar.position.height) {
+            this.#invertXSpeed();
+        }
+    }
+
+    recalculateYPosition(shouldInvertSpeed) {
         if (this.#isNextYPositionOutsideCanvasHeight()) {
-            this.#y = this.#canvas.height - this.#height;
+            this.#y = this.#canvasHeight - this.#height;
+
+            if (!shouldInvertSpeed) return;
             this.#invertYSpeed();
             return;
         }
 
         if (this.#isNextYPositionOutsideCanvas()) {
             this.#y = 0;
+
+            if (!shouldInvertSpeed) return;
             this.#invertYSpeed();
             return;
         }
@@ -101,19 +134,20 @@ export class Position {
         this.#y += this.#dy;
     }
 
-    recalculateXPosition(isMovingObject = false) {
+    recalculateXPosition(shouldInvertSpeed) {
         if (this.#isNextXPositionOutsideCanvasWidth()) {
-            this.#x = this.#canvas.width - this.#width;
+            this.#x = this.canvasWidth - this.#width;
 
-            if (!isMovingObject) return;
+            if (!shouldInvertSpeed) return;
             this.#invertXSpeed();
             return;
         }
 
         if (this.#isNextXPositionOutsideCanvas()) {
+
             this.#x = 0;
 
-            if (!isMovingObject) return;
+            if (!shouldInvertSpeed) return;
             this.#invertXSpeed();
             return;
         }

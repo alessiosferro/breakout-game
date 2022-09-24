@@ -27,6 +27,14 @@ export class PlayerBar {
         this.#handleBarMove();
     }
 
+    get position() {
+        return this.#position;
+    }
+
+    get canvas() {
+        return this.#canvas;
+    }
+
     render() {
         this.#canvas.ctx.fillStyle = this.#color;
         this.#canvas.ctx.fillRect(this.#position.x, this.#position.y, this.#position.width, this.#position.height);
@@ -36,18 +44,27 @@ export class PlayerBar {
     #handleBarMove() {
         window.addEventListener('keydown', (event) => this.#moveLeft(event));
         window.addEventListener('keydown', (event) => this.#moveRight(event));
-        window.addEventListener('keyup', () => this.#position.resetXSpeed());
+        window.addEventListener('keyup', event => this.#resetMoveLeft(event));
+        window.addEventListener('keyup', event => this.#resetMoveRight(event));
+    }
+
+    #resetMoveRight(event) {
+        if (event.key !== 'ArrowRight' || this.#position.dx < 0) return;
+        this.#position.dx = 0;
+    }
+
+    #resetMoveLeft(event) {
+        if (event.key !== 'ArrowLeft' || this.#position.dx > 0) return;
+        this.#position.dx = 0;
     }
 
     #moveRight(event) {
         if (event.key !== 'ArrowRight' || this.#position.dx > 0) return;
-
         this.#position.dx = this.#speed;
     }
 
     #moveLeft(event) {
         if (event.key !== 'ArrowLeft' || this.#position.dx < 0) return;
-
         this.#position.dx = -this.#speed;
     }
 }
