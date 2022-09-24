@@ -77,6 +77,14 @@ export class Position {
         this.#dx = -this.#dx;
     }
 
+    resetXSpeed() {
+        this.#dx = 0;
+    }
+
+    resetYSpeed() {
+        this.#dy = 0;
+    }
+
     recalculateYPosition() {
         if (this.#isNextYPositionOutsideCanvasHeight()) {
             this.#y = this.#canvas.height - this.#height;

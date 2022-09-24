@@ -4,12 +4,15 @@ export class PlayerBar {
     #speed;
     #color;
     #position;
+    #canvas;
 
     constructor({color = 'black', speed = 5, canvas}) {
         const width = canvas.blockSize * 6;
+        this.#canvas = canvas;
 
         this.#position = new Position({
-            canvas,
+            canvasWidth: canvas.width,
+            canvasHeight: canvas.height,
             width,
             height: canvas.blockSize,
             y: canvas.height - canvas.blockSize * 3,
@@ -25,16 +28,15 @@ export class PlayerBar {
     }
 
     render() {
-        this.#position.canvas.ctx.fillStyle = this.#color;
-        this.#position.canvas.ctx.fillRect(this.#position.x, this.#position.y, this.#position.width, this.#position.height);
-
+        this.#canvas.ctx.fillStyle = this.#color;
+        this.#canvas.ctx.fillRect(this.#position.x, this.#position.y, this.#position.width, this.#position.height);
         this.#position.recalculateXPosition();
     }
 
     #handleBarMove() {
         window.addEventListener('keydown', (event) => this.#moveLeft(event));
         window.addEventListener('keydown', (event) => this.#moveRight(event));
-        window.addEventListener('keyup', () => this.#reset());
+        window.addEventListener('keyup', () => this.#position.resetXSpeed());
     }
 
     #moveRight(event) {
@@ -47,13 +49,5 @@ export class PlayerBar {
         if (event.key !== 'ArrowLeft' || this.#position.dx < 0) return;
 
         this.#position.dx = -this.#speed;
-    }
-
-    #reset() {
-        this.#position.dx = 0;
-    }
-
-    set dx(dx) {
-        this.#position.dx = dx;
     }
 }
